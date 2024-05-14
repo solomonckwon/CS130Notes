@@ -1,0 +1,624 @@
+\documentclass{article}
+
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{outline}
+\usepackage[margin=1in]{geometry}
+
+\title{CS130 Notes}
+\author{Solomon Kwon}
+
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+\maketitle
+
+\pagebreak
+
+\section{Source Control}
+
+\subsubsection*{Allows for}
+\begin{itemize}
+    \item Reproducible state
+    \item Backing up work
+    \item Documenting progress
+    \item Post-mortem
+    \item Make collaboration possible
+    \item Legal pedigree
+\end{itemize}
+
+\vspace*{1em}
+
+\subsubsection*{Adds complexity:}
+
+\begin{itemize}
+    \item Can't just edit files willy-nilly
+    \item Have to check them in and check them out.
+    \item Have to figure out how to size changelists
+    \item More thinking
+\end{itemize}
+\begin{multicols}{2}
+    \subsubsection*{... but reduces risk}
+        \begin{itemize}
+            \item of losing progress
+            \item of not being able to solve user problems
+            \item of legal liability
+        \end{itemize}
+    \subsubsection*{... and is more scalable}
+        \begin{itemize}
+            \item more people can contribute sensibly
+            \item allows specialization
+        \end{itemize}
+\end{multicols}
+
+\subsection{Source Control Tools}
+
+\begin{itemize}
+    \item Git
+    \item Subversion
+    \item Mercurial
+    \item CVS
+    \item Perforce
+    \item SourceSafe
+    \item BitKeeper
+\end{itemize}
+
+\subsection{Changelists and filesets}
+
+Files in source control organized by the logic of the project and build system.
+
+\vspace*{1em}
+
+Different source control systems treat files differently.
+\begin{itemize}
+    \item Git treats the entire repository at once, and references the whole fileset by hash
+\end{itemize}
+    
+Changelists are determined by development logic:
+\begin{itemize}
+    \item Chosen to advance the goals of the project
+    \item Use changelists to make sense internally as a project state transition\par
+    Ideally: Self-contained, small, single-function
+    \item Can be part of a larger group of changelists
+    \item Larger sequences can be arranged as branches
+\end{itemize}
+
+\subsection{Git source control}
+
+\subsubsection{Diffs}
+Instead of storing a copy of the repo at each version, store only a \textbf{diff} that tells you how to modify each version to get to the next incremental version.
+
+\includegraphics*[width=\linewidth]{gitDiff.png}
+
+\includegraphics*[width=\linewidth]{gitDIffEx.png}
+
+\textbf{Commit:} A snapshot of the repository at a given point in time. Think "node"
+
+\textbf{Changelist: } A diff that represents how the repository is changed between commits. Think "edge"
+
+\subsubsection{Making new commits}
+
+In order to commit
+\begin{enumerate}
+    \item Edit files locally
+    \item Add them to potential commit
+    \item Call `git commit`
+\end{enumerate}
+
+Git will automatically collapse your changes into a diff and store those changes. \par
+- Git will also give your commit a name (hash of fileset)
+
+\subsubsection{Making a new branch}
+
+\textbf{Branch: } A pointer to a specific commit.
+
+"Making a new branch" means "create a new pointer that points at the same place I'm currently pointed at"
+
+\vspace*{1em}
+
+`git checkout -b new-feature`\par
+- creates new branch 'new-feature'
+
+\vspace*{1em}
+
+\textbf{HEAD: } The commit where I am \textit{currently} working. Indicated by asterisks to annotate where HEAD is pointing.
+
+\includegraphics*[width=\linewidth]{gitBranch.png}
+
+'git checkout some\_branch'\par
+- moves pointer to some\_branch
+
+\subsubsection{Tree turns into graph}
+
+\textbf{Merge:} Create a commit with 2 parents
+
+\includegraphics*[width=\linewidth]{gitMerge.png}
+\begin{center}
+    Whats in v7? [v5 plus Diff 5] OR [v6 plus Diff 3 plus Diff 4]
+
+    Both are equivalent...
+\end{center}
+
+\subsubsection{Pruning the tree}
+
+\includegraphics*[width=\linewidth]{gitPruningTree.png}
+
+\pagebreak
+
+\section{Testing}
+
+"The software should be subjected to extensive testing and formal analysis at the module and software level; system testing alone is not adequate."
+
+\vspace*{1em}
+
+Good tests are:
+\begin{itemize}
+    \item Automated
+    \item Repeatable
+    \item Meaningful
+    \item Reliable
+    \item Easy to run
+    \item Fast 
+    \item Checked into revision control
+\end{itemize}
+
+Types of tests:
+\begin{multicols}{2}
+    \subsubsection*{Types of Tests}
+        \begin{itemize}
+            \item Unit Tests
+            \item Integration Tests
+            \item Regression Tests
+            \item ect.....
+        \end{itemize}
+    \subsubsection*{}
+        \vspace*{1em}
+        \includegraphics*[width=\linewidth]{testTypes.png}
+\end{multicols}
+
+Well tested system has many tests, of many kinds, which provide overlapping coverage.
+
+\subsection{Test Driven Development}
+WHen you know the desired result before you know how to implement, you can write unit tests that are examples of using your API.
+
+\vspace*{1em}
+
+Before fixing a bug, write a unit test that fails because of the bug.
+
+\subsection{Signs you need MORE tests}
+
+\begin{itemize}
+    \item "Low-level"
+    \item "Mission-critical"
+    \item Lots of people are depending on it (customers, coworkers)
+    \item Failure is expensive (pathfinder)
+    \item Failure will result in death (Therac-25)
+\end{itemize}
+
+\textbf{Write more tests} isn't always the answer....
+
+\begin{itemize}
+    \item Prototypes and rapidly changing code 
+    \item One-off scripts, non-productive code
+    \item Tests can be flakey 
+    \item Sometimes there is no substitute for manual testing
+    User interfaces, Hardware("dogfooding")
+\end{itemize}
+
+Tests are expensive to write and maintain. Time, money, opportunity.
+
+\includegraphics*[width=0.6\linewidth]{testChecklist.png}
+
+General guidelines for course:
+\begin{itemize}
+    \item Code should have unit tests, at least for basic use cases and common errors
+    \item Pretty much all classes and source files should have unit test
+    \item Binaries should have an integration test 
+\end{itemize}
+
+\subsection{What to test?}
+
+\begin{itemize}
+    \item Public API, typical use cases first
+    \item Error handling
+    \item Anything complex 
+\end{itemize}
+
+\textbf{Unit tests: } Tests units of code (classes, files, modules) in isolation.
+\begin{itemize}
+    \item Written in the same language as the code they test.
+    \item High bang-for-the-buck.
+    Fast to write + fast to execute
+    \item Serve as documentation, demonstrates the API
+    \item You can make changes quickly and confidently.
+    \item Faster in the long run.
+\end{itemize}
+
+\subsubsection*{Finding good test cases}
+\begin{itemize}
+    \item Boundary conditions\par
+    int Add(int a, int b) -> What if a, b are 0, 1 negative, really big, ect.\par
+    double Average(vector<double> a) -> What if a is empty, 1 element, really big, ect.
+    \item Pre and post-conditions\par
+    What should be true before and after a function, loop, or conditional?
+    \item Be defensive\par
+    What happens if something that "can't happen" does?
+    \item Error conditions\par
+    What happens in the case of an error? (e.g. file not found)\par
+    Do we crash, return early, throw an exception, ect..
+\end{itemize}
+
+When in doubt: write your API docs on public methods. For each public method, write a test case for each statement of the docs.
+
+\subsubsection*{Things that are hard to unit test}
+\begin{itemize}
+    \item Global variables
+    \item Long, complex methods
+    \item Objects with state
+    \item Tight coupling (interdependent classes)
+    \item Bad abstractions
+\end{itemize}
+
+\subsection{Refactoring}
+
+Refactoring is rewriting code to improve some property, without changing the functionality.
+
+\vspace*{1em}
+
+In this case, we are restructuring the code to be more testable. But could also be refactored to be more maintainable: divide up long functions, make class do fewer things.
+
+\vspace*{1em}
+
+Each change is small and incremental, so the changes are more likely to be safe. Best practice is to create tests ahead of time so the test can verify correct behavior after the changes.
+\begin{itemize}
+    \item Mocks can be valuable when you are the client of large classes you don't want to test.
+    \item Costly because you have to change the code's structure materially, usually by adding interfaces.
+    \item Code often ends up a bit cleaner, sometimes you need to poke ugly holes for testing.
+\end{itemize}
+
+\subsubsection*{Refactor Ex 1}
+
+\includegraphics*[width=0.6\linewidth]{refactorEx1.png}
+
+\begin{center}
+    \begin{itemize}
+        \item Extract method when a fucntion gets too long or has a useful internal Boundary
+        \item We used this to extract ProcessRequest() and later HandleRequest()
+    \end{itemize}
+\end{center}
+
+\includegraphics*[width=0.6\linewidth]{refactorEx2.png}
+
+\begin{center}
+    \begin{itemize}
+        \item Introduce param object when a method's param list gets too long.
+        \item Certain functions have many params\par
+        Often triggered by dependency injection or tunability
+        \item Can create a param object (also known as an options struct) to encapsulate these params
+        \item Nice side effect: you can define defaults and have a bit more control over values before the function executes
+    \end{itemize}
+\end{center}
+
+\includegraphics*[width=0.6\linewidth]{refactorEx3.png}
+
+\begin{center}
+    \begin{itemize}
+        \item Replace magic number with symbolic constant.
+        \item There is nothing worse than random numbers strewn around code that have no clear documentation. (WHY DID YOU PICK THAT NUMBER???)
+        \item Instead, symbolic constants make code self-documenting
+        \item Done for the buffer length.
+    \end{itemize}
+\end{center}
+
+\includegraphics*[width=0.6\linewidth]{refactorEx4.png}
+
+\begin{center}
+    \begin{itemize}
+        \item Replace Constructor with Factory Method when you want your constructor to be able to fail without using exceptions. (Exceptions in C++ are difficult to use correctly and often best avoided)
+        \item Can also help if you want to hide which derived type is being returned based on the input values.
+        \item Potential downside: forces you to allocate this object on the heap. Not usually a huge issue.
+    \end{itemize}
+\end{center}
+
+\includegraphics*[width=0.6\linewidth]{refactorEx5.png}
+
+\begin{center}
+    \begin{itemize}
+        \item Introduce expression builder when your object has a required call sequence; ie, first call these setup functions, then you can use the rest of the functions. 
+        \item Separate setup/construction functions from the runtime functions. 
+        \item More flexible than a factory.
+    \end{itemize}
+\end{center}
+
+
+\subsection{Dependency Injections}
+
+DI is a design pattern used in software development to enhance modularity, maintainability, and testability of code.
+
+\vspace*{1em}
+
+Objects \textbf{ask} for what they need instead of \textbf{retrieving} what they need.
+
+In this way, your objects will depend solely on interfaces, and will be \textbf{implementation agnostic}.
+
+\includegraphics*[width=\linewidth]{DIEx1.png}
+\includegraphics*[width=\linewidth]{DIFramwork.png}
+
+\subsubsection*{One weird thing...}
+
+Adoption of a DI framework will cause your code to look pretty different. E.g. Google codebase -> No usage of 'new' anywhere!
+
+\begin{center}
+    \includegraphics*[width=0.5\linewidth]{weirdDI.png}
+\end{center}
+
+\subsection{Mocks vs Fakes}
+
+\textbf{Real object: } Same implementation you'd use in production.
+
+\textbf{Fake object: } Trivial implementation of the interface that satisfies all contracts but relies on memory only (e.g. FakeDatabase performs read/mutate operations as expected, but on an array in memory instead of using a SQL database)
+
+\textbf{Mock object: } Placeholder test object that can be set up to respond to respond to specific stimuli and report back how it was interacted with.
+
+\vspace*{1em}
+
+Real object should be preferred for testing:
+\begin{itemize}
+    \item Mocks/fakes have to be written.
+    \item Mocks/fakes could have bugs. 
+    \item Mocks/fakes have more maintenance cost.
+\end{itemize}
+
+Mock objects are also an option:
+\begin{itemize}
+    \item Pros
+    \begin{itemize}
+        \item Only need to define the behavior you care about in your test
+        \item Mocks can confirm some API contracts
+    \end{itemize}
+    \item Cons
+    \begin{itemize}
+        \item Maintenance cost
+        \item Eay to misuse
+    \end{itemize}
+\end{itemize}
+
+Fake objects are usually the next best thing to real objects:
+\begin{itemize}
+    \item Pros 
+    \begin{itemize}
+        \item Only need to define it once. Service owner should also own and maintain the fake for their service.
+        \item Fake can be tested independently to verify its behavior.
+    \end{itemize}
+    \item Cons 
+    \begin{itemize}
+        \item Maintenance cost
+        \item Sometimes not trivial to satisfy the service's contract in memory. Think about how you would write the minimal implementation of Socket that satisfied its API contracts.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Testing State vs Testing Interaction}
+
+Best practice is to make sure your testing state is to \textbf{test your public APIs}.
+
+Your public API should have a clear contract that defines state that should be returned by your service, so your API documentation can serve as a blueprint of what to test.
+
+\vspace*{1em}
+
+A bad code smell is testing package private methods/making a method visible specifically for testing.
+
+This almost always indicates you're testing some sort of interaction, since your test is now relying on implementation details.
+
+\subsection{Testing Readability}
+
+\includegraphics*[width=0.5\linewidth]{testStructure.png}
+
+Tests are not tested, so err on the side of repetitive and verbose test. Refactoring into concise helper methods is best practice in production code, but can introduce untested programming errors when used in tests.
+
+\vspace*{1em}
+
+Testing is often great documentation. How often do you look for usages of an API to figure out how it works?
+
+\includegraphics*[width=\linewidth]{testingDRYDAMP.png}
+
+\subsection{Integration Tests}
+
+At this point, we've refactored all our code to make unit testing easy. We've stubbed out all of the really hairy stuff (network, disk, etc.). 
+
+\vspace*{1em}
+
+How do we test the connections we stubbed out?
+
+By testing code end to end.
+
+\begin{itemize}
+    \item Integration tests tend do be VERY expensive
+    \begin{itemize}
+        \item to write
+        \item to keep green
+        \item to run
+    \end{itemize}
+\end{itemize}
+
+\subsubsection*{Picking integration tests}
+
+Pick a small handful of CRITICAL use cases for your application, and test those. 
+
+\vspace*{1em}
+
+Want to be \textbf{100\%} sure that if key functionality in app is broken, then you know about it.
+
+\subsubsection*{Web Driver Integration Ex}
+
+\includegraphics*[width=\linewidth]{integrationTestEx.png}
+
+Test your API by firing a variety of real requests.
+
+Keep a copy of "golden" response for each request and make sure the requests coming back match it in all ways that matter
+
+\includegraphics*[width=\linewidth]{integrationScreenshot.png}
+
+\pagebreak
+
+\section{Code Reviews}
+
+The best proof of reusability is review. Code review ensures that someone else values and understands the code.
+
+\begin{itemize}
+    \item Give it to someone else and see if they appreciate it.
+    \item They should be able to merge it into their stack and use it.
+\end{itemize}
+
+\subsubsection*{Thinking Systems}
+\textbf{System 1:} Intuitive, fast, but has higher error rates
+
+\textbf{System 2:} Methodical, slow, low error rates, but is hard to engage
+
+\vspace*{1em}
+
+Code review makes us more likely to generate "system 2" code.
+
+\vspace*{1em}
+
+Research on code review shows:
+\begin{itemize}
+    \item Code review catches 60-90\% of errors. Fagan 1976
+    \item The first reviewer and first review matter the most. Cohen 2006
+    \item Defect rates in code are related to program size, and seemingly little else. El Imam 2001
+\end{itemize}
+
+\vspace*{1em}
+
+Before sending out code for review make sure you have done these things:
+\begin{enumerate}
+    \item Write coe that is easy to review!
+    \item Keep changes small and focused
+    \item Send a work in progress review out early
+    \item Review your own work!
+\end{enumerate}
+
+\subsection{Change Descriptions}
+Change descriptions should be more than just \textit{what} the change is. \textit{Why} was the change made? \textit{How} was the \textit{why} accomplished? Any new testing?
+
+\vspace*{1em}
+
+\subsection{During code review}
+
+Flag errors of execution:
+\begin{itemize}
+    \item Unclear documentation
+    \item Typos
+    \item Style Violations
+    \item Bad/missing Tests
+    \item Bugs
+\end{itemize}
+
+Apply deliberate thinking to find errors:
+\begin{itemize}
+    \item Is this algorithm correct?
+    \item Is this built to specifications?
+    \item Does this code need to exist?
+    \item Is this the most elegant solution?
+\end{itemize}
+
+\vspace*{1em}
+
+Code review also develops a shared understanding about the purpose of the code. 
+\begin{itemize}
+    \item Aligns the team on "landmarks"
+    \item Small changes can lead to target drift
+    \item Each code review is an opportunity to course-correct
+    \item How will this code be used next year?
+\end{itemize}
+
+It also establishes N+1 availability ion understanding of the code, which is important because teams are dynamic.
+
+\subsection{Methods of code review}
+\begin{itemize}
+    \item Projecting code in a meeting
+    \item Pair programming
+    \item Pull requests
+    \item Code review tools
+\end{itemize}
+
+\textbf{Remember:} Be thoughtful and careful with words. Avoid personal attacks, reviews are not a competition.
+
+\subsection{Git with Gerrit}
+
+\subsubsection*{Sending Code for Review}
+
+Before starting work on a feature, you should create a new git branch, assuming that the code does not depend on anything outside of the main branch. 
+
+Features should be small enough that you make a small number of commits before sending code out for review.
+
+First create a branch:
+\begin{verbatim}
+    $ git checkout -b my_feature 
+\end{verbatim}
+
+...edit code then:
+\begin{verbatim}
+    $ git add .
+    $ git commit -m "Wrote a bunch of code"
+    $ git review --reviewers my_reviewer
+\end{verbatim}
+
+\subsubsection*{Responding to reviews }
+
+You can use git review to pull your latest patch set for a given change ID from the server and create a new temporary branch in which you can make all your edits. 
+
+When you're done, you can amend your previous commit, then upload the patch to your review thread. 
+
+\vspace*{1em}
+
+First view your changes and get a change ID:
+
+\begin{verbatim}
+    $ git review -l
+    $ git review -d my_change_id
+\end{verbatim}
+
+...edit your code, then:
+
+\begin{verbatim}
+    $ git add .
+    $ git commit --amend --no-edit
+    $ git review -f 
+\end{verbatim}
+
+\textbf{Note: } it's important to use the --amend flag with git commit, to avoid creating a new commit (which would create a new ChangeId in the commit text, and would be bad). Gerrit uses change IDs to uniquely represent changes, so if you create a new commit instead of amending a previous one, you will also create a new review thread in Gerrit instead of modifying your existing one.
+
+\textbf{Another note:} We're using '-f' with git review to delete this branch, since it was only crated by git review for the purpose of responding to a given round of review.
+
+\pagebreak
+
+\section{Tools for web server development}
+
+\pagebreak
+
+\section{Build Systems}
+
+\pagebreak
+
+\section{Deployment}
+
+\pagebreak
+
+\section{Refactoring and debugging the web server}
+
+\pagebreak
+
+\section{Testability}
+
+\pagebreak
+
+\section{Static Analysis}
+
+\pagebreak
+
+\section{Logging and exception handling}
+
+\pagebreak
+
+\end{document}
