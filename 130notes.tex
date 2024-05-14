@@ -595,6 +595,142 @@ First view your changes and get a change ID:
 
 \section{Tools for web server development}
 
+\subsection*{HTTP in (some) context:}
+\includegraphics*[width=\linewidth]{HTTPinContext.png}
+
+Things you will see:
+\begin{itemize}
+    \item MIME Types
+    \item Header liens
+    \item \textbackslash r\textbackslash n\textbackslash r\textbackslash n or (\textbackslash n\textbackslash n)
+    \item Connection management
+    \item Error codes 
+    \item Probers 
+\end{itemize}
+
+\subsection{Command-line HTTP tools}
+
+\subsubsection{Netcat (NC)}
+
+\begin{verbatim}
+    $ echo -e "GET / HTTP/1.0\n\n" | \ nc code.cs130.org 80
+\end{verbatim}
+
+Output:
+
+\begin{verbatim}
+    HTTP/1.1 400 Bad Request
+    Server: nginx/1.24.0
+    Date: Tue, 14 May 2024 03:41:55 GMT
+    Content-Type: text/html
+    Content-Length: 157
+    Connection: close
+
+    <html>
+    <head><title>400 Bad Request</title></head>
+    <body>
+    <center><h1>400 Bad Request</h1></center>
+    <hr><center>nginx/1.24.0</center>
+    </body>
+    </html>
+\end{verbatim}
+
+Pros:
+\begin{itemize}
+    \item Versatile
+    \item Can easily craft malformed requests
+\end{itemize}
+
+Cons:
+\begin{itemize}
+    \item Must manually craft well-formed requests
+    \item No SSL support
+    \item Knows nothing of HTTP 
+\end{itemize}
+
+\subsubsection{Curl (curl)}
+
+\begin{verbatim}
+    $ curl -v http://code.cs130.org/ 
+\end{verbatim}
+
+Output:
+\begin{verbatim}
+    *   Trying 34.105.65.41:80...
+    * Connected to code.cs130.org (34.105.65.41) port 80
+    > GET / HTTP/1.1
+    > Host: code.cs130.org
+    > User-Agent: curl/8.4.0
+    > Accept: */*
+    > 
+    < HTTP/1.1 301 Moved Permanently
+    < Server: nginx/1.24.0
+    < Date: Tue, 14 May 2024 03:44:15 GMT
+    < Content-Type: text/html
+    < Content-Length: 169
+    < Connection: keep-alive
+    < Location: https://code.cs130.org/
+    < 
+    <html>
+    <head><title>301 Moved Permanently</title></head>
+    <body>
+    <center><h1>301 Moved Permanently</h1></center>
+    <hr><center>nginx/1.24.0</center>
+    </body>
+    </html>
+    * Connection #0 to host code.cs130.org left intact
+\end{verbatim}
+
+Pros:
+\begin{itemize}
+    \item Output can be concise
+    \item Robust HTTP support 
+    \item Easy to use 
+\end{itemize}
+Cons:
+\begin{itemize}
+    \item Geared towards end-users, not developers
+    \item Output can be hard to parse 
+\end{itemize}
+
+\subsubsection{HTTPie (HTTP)}
+
+\begin{verbatim}
+    $ http GET http://cdoe.cs130.org/
+\end{verbatim}
+
+Output:
+\begin{verbatim}
+    HTTP/1.1 301 Moved Permanently
+    Connection: keep-alive 
+    Content-Length: 194 
+    Content-Type: text/html 
+    Date: Mon, f14 Jan 2019 03:13:04 GMT 
+    Location: https://code.cs130.org/ 
+    Server: nginx/1.13.0 (Ubuntu)
+\end{verbatim}
+
+Pros:
+\begin{itemize}
+    \item Output is very configurable
+    \item Robust HTTP support
+    \item Can specify request method 
+\end{itemize}
+
+Cons:
+\begin{itemize}
+    \item Requires more configuration than other tools
+\end{itemize}
+
+\subsection{Using real Browsers}
+
+Early goal should be to support browser requests. This is tough on web servers. Need to implement many (all?) aspects of HTTP
+
+\subsubsection*{Chrome DevTools}
+\includegraphics*[width=\linewidth]{chromeDevTools1.png}
+\includegraphics*[width=\linewidth]{chromeDevTools2.png}
+
+
 \pagebreak
 
 \section{Build Systems}
