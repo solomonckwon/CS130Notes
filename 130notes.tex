@@ -735,6 +735,74 @@ Early goal should be to support browser requests. This is tough on web servers. 
 
 \section{Build Systems}
 
+\textbf{Build: } Compile your code.
+
+(source code $\Rightarrow$ executable binary)
+
+\vspace*{1em}
+
+\textbf{Deploy: } Get your code running
+
+(Run an executable)
+
+\textbf{LESSONS:}
+\begin{enumerate}
+    \item Builds should be one simple step.
+    \begin{verbatim}
+        $ ./build.sh
+    \end{verbatim}
+    \item Builds should be repeatable.
+
+    Different engineers at different times should get the same output.
+    \item Valuable things go in revision control, being able to build your project is valuable.
+    
+    Therefore, build scripts go in revision control.
+\end{enumerate}
+
+But bash scripts can be tricky to write, aren't very readable, and aren't easy to maintain. 
+
+\subsection{Make}
+
+\begin{center}
+    \includegraphics*[width=0.7\linewidth]{MakeConfigParser.png}
+\end{center}
+
+\subsubsection*{Exposing intermediates in g++}
+
+Compiling and link can be done in one step:
+\begin{verbatim}
+    $ g++ foo.cc -o foo
+\end{verbatim}
+
+Or in two steps:
+\begin{verbatim}
+    $ g++ -c foo.cc # produces foo.o (compilation)
+    $ g++ foo.o -o foo $ linking
+\end{verbatim}
+
+\subsubsection*{Compiling}
+
+\begin{center}
+    \includegraphics*[width=0.7\linewidth]{compilation.png}
+\end{center}
+
+\subsubsection*{Linking}
+
+\begin{center}
+    \includegraphics*[width=0.7\linewidth]{linking.png}
+\end{center}
+
+\subsubsection*{Dependency graph}
+
+\begin{center}
+    \includegraphics*[width=0.7\linewidth]{dependencyGraph.png}
+\end{center}
+
+Intermediates can be reused:
+\begin{center}
+    \includegraphics*[width=0.7\linewidth]{reusingIntermediates.png}
+\end{center}
+
 \pagebreak
 
 \section{Deployment}
