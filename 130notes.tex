@@ -803,6 +803,214 @@ Intermediates can be reused:
     \includegraphics*[width=0.7\linewidth]{reusingIntermediates.png}
 \end{center}
 
+\subsubsection*{Config parser Makefile, version 1}
+
+\begin{verbatim}
+  config_parser_main: config_parser_main.o config_parser.o
+    g++ -o config_parser_main config_parser_main.o config_parser.o \
+    -std=c++11 -Wall -Werror
+  
+  config_parser.o: config_parser.cc config_parser.h
+    g++ -c config_parser.cc -std=c++11 -Wall -Werror
+  
+  config_parser_main.o: config_parser_main.cc config_parser.h
+    g++ -c config_parser_main.cc -std=c++11 -Wall -Werror
+  
+\end{verbatim}
+
+\subsubsection*{Config parser Makefile, version 2}
+
+\begin{verbatim}
+    CXXFLAGS=-std=c++11 -Wall -Werror
+    config_parser_main: config_parser_main.o config_parser.o
+        $(LINK.cc) $^ $(LDLIBS) -o $@
+
+    config_parser.o: config_parser.cc config_parser.h
+        $(CXX) $(CXXFLAGS) -c $<
+
+    config_parser_main.o: config_parser_main.cc config_parser.h
+        $(CXX) $(CXXFLAGS) -c $<    
+  
+\end{verbatim}
+
+\subsubsection{Who makes the Makefiles?}
+
+Makefiles can get real complex, real fast.
+
+It is difficult to: 
+\begin{itemize}
+    \item encode logic into Makefile 
+    \item detect compilers
+    \item detect and build with installed packages 
+\end{itemize}
+
+Solution: Generate Makefiles
+
+\subsection{GNU Build System}
+\begin{itemize}
+    \item Autoconf + Automake
+    \item Notable files:
+    \begin{itemize}
+        \item Makefile.am
+        \item configure 
+        \item Makefile.in 
+        \item config.h 
+    \end{itemize}
+    \item  Run:
+    \begin{itemize}
+        \item \$ ./configure 
+        \item \$ make
+    \end{itemize}
+    \item Creates GNU-compatible Makefiles
+\end{itemize}
+
+\subsection{CMake}
+\begin{itemize}
+    \item Single tool
+    \item Notable files:
+    \begin{itemize}
+        \item CMakeLists.txt
+        \item build/
+        \item A ton of generated files 
+    \end{itemize}
+    \item Run:
+    \begin{itemize}
+        \item \$ cd build
+        \item \$ cmake .. 
+        \item \$ make 
+    \end{itemize}
+    \item Supports multiple output formats
+\end{itemize}
+
+\subsubsection{CMake Examples}
+
+Define library:
+\begin{verbatim}
+    add_library(config_parser src/config_parser.cc) # libconfig_parser.a
+\end{verbatim}
+
+Define executable:
+\begin{verbatim}
+    add_executable(config_parser_test tests/config_parser_test.cc) # config_parser_test 
+    target_link_libraries(config_parser_test config_parser gtest_main) 
+\end{verbatim}
+
+Add GTest tests:
+\begin{verbatim}
+    gtest_discover_tests(config_parser_test WORKING_DIRECTORY 
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+\end{verbatim}
+
+Add non-GTest tests:
+\begin{verbatim}
+    add_test(NAME web_test
+        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/web_test.sh -s "$<TARGET_FILE:webserver>"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+\end{verbatim}
+
+Include external source package:
+\begin{verbatim}
+    add_subdirectory(/usr/src/googletest googletest)
+\end{verbatim}
+
+Include external installed(compiled) library:
+\begin{verbatim}
+    find_package(Boost 1.50 REQUIRED COMPONENTS signals system)
+\end{verbatim}
+
+\subsection{Build Systems Wishlist}
+
+A good build system has many desirable features, unfortunately some are contradictory.
+
+\subsubsection{Correct}
+
+The build should be a faithful representation of the current state of your source code. What if a file has changed somewhere, bu the build system doesn't realize it?
+
+\begin{itemize}
+    \item Easy to happen in GNU Make
+    \item make clean to the rescue
+    \item GMake detects changes by timestamps. Hashing is slower, but more accurate.
+\end{itemize}
+
+The build should be as close as possible ot what you're going to release. (Very hard to achieve!)
+\begin{itemize}
+    \item Debug vs. optimized builds?
+    \item Instrumented binaries (e.g. to find memory bugs, coverage)
+    \item Extra logging?
+\end{itemize}
+
+\subsubsection{Hermetic}
+Different users in different environments should get the same result.
+
+\begin{itemize}
+    \item What if you're on different OSes? 
+    \item What if you're using different compilers?
+
+    Do you check your compiler into version control? Almost never, but Google does.
+    \item What if your shells are configured differently?
+    
+    E.g. Different .bashrc, different umask, etc. 
+    \item Possible solutions:
+    \begin{itemize}
+        \item Build in a virtual machine
+        \item Build in a Docker container
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Flexible}
+
+Want ability to:
+\begin{itemize}
+    \item Change compilation and linking options
+    \item Support other languages 
+    \item Support custom build rules 
+\end{itemize}
+
+\subsubsection{Easy to use}
+\begin{itemize}
+    \item Build in one step
+    \item Easy to set up for your project 
+    \item One obvious way to do things (Make fails here!)
+\end{itemize}
+
+\subsubsection{Automatable}
+
+Builds should happen automatically, and frequently
+
+What's best for your project?
+\begin{itemize}
+    \item Nightly?
+    \item After every submit? ("continuous build")
+    \item Whenever you save a file you're editing?
+\end{itemize}
+
+\subsubsection{Fast}
+
+The more builds you want to do, the faster it needs to be.
+
+\vspace*{1em}
+
+Some practices to increase build speed:
+
+Tell GMake to run 4 build commands at a tim (-j4)
+\begin{verbatim}
+    make -j4 
+\end{verbatim}
+
+\textbf{Use Build cluster:} Distributing the build process across multiple machines or nodes in a cluster.
+
+\vspace*{1em}
+
+Cache intermediates and only build what has changed.
+
+\subsubsection{Manage dependencies automatically}
+
+This is important for fast and scalable on our wishlist. 
+
+CMake does this for you!
+
+
+
 \pagebreak
 
 \section{Deployment}
