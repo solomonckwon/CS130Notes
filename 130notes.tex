@@ -14,6 +14,8 @@
 
 \maketitle
 
+\tableofcontents
+
 \pagebreak
 
 \section{Source Control}
@@ -259,77 +261,6 @@ When in doubt: write your API docs on public methods. For each public method, wr
     \item Tight coupling (interdependent classes)
     \item Bad abstractions
 \end{itemize}
-
-\subsection{Refactoring}
-
-Refactoring is rewriting code to improve some property, without changing the functionality.
-
-\vspace*{1em}
-
-In this case, we are restructuring the code to be more testable. But could also be refactored to be more maintainable: divide up long functions, make class do fewer things.
-
-\vspace*{1em}
-
-Each change is small and incremental, so the changes are more likely to be safe. Best practice is to create tests ahead of time so the test can verify correct behavior after the changes.
-\begin{itemize}
-    \item Mocks can be valuable when you are the client of large classes you don't want to test.
-    \item Costly because you have to change the code's structure materially, usually by adding interfaces.
-    \item Code often ends up a bit cleaner, sometimes you need to poke ugly holes for testing.
-\end{itemize}
-
-\subsubsection*{Refactor Ex 1}
-
-\includegraphics*[width=0.6\linewidth]{refactorEx1.png}
-
-\begin{center}
-    \begin{itemize}
-        \item Extract method when a fucntion gets too long or has a useful internal Boundary
-        \item We used this to extract ProcessRequest() and later HandleRequest()
-    \end{itemize}
-\end{center}
-
-\includegraphics*[width=0.6\linewidth]{refactorEx2.png}
-
-\begin{center}
-    \begin{itemize}
-        \item Introduce param object when a method's param list gets too long.
-        \item Certain functions have many params\par
-        Often triggered by dependency injection or tunability
-        \item Can create a param object (also known as an options struct) to encapsulate these params
-        \item Nice side effect: you can define defaults and have a bit more control over values before the function executes
-    \end{itemize}
-\end{center}
-
-\includegraphics*[width=0.6\linewidth]{refactorEx3.png}
-
-\begin{center}
-    \begin{itemize}
-        \item Replace magic number with symbolic constant.
-        \item There is nothing worse than random numbers strewn around code that have no clear documentation. (WHY DID YOU PICK THAT NUMBER???)
-        \item Instead, symbolic constants make code self-documenting
-        \item Done for the buffer length.
-    \end{itemize}
-\end{center}
-
-\includegraphics*[width=0.6\linewidth]{refactorEx4.png}
-
-\begin{center}
-    \begin{itemize}
-        \item Replace Constructor with Factory Method when you want your constructor to be able to fail without using exceptions. (Exceptions in C++ are difficult to use correctly and often best avoided)
-        \item Can also help if you want to hide which derived type is being returned based on the input values.
-        \item Potential downside: forces you to allocate this object on the heap. Not usually a huge issue.
-    \end{itemize}
-\end{center}
-
-\includegraphics*[width=0.6\linewidth]{refactorEx5.png}
-
-\begin{center}
-    \begin{itemize}
-        \item Introduce expression builder when your object has a required call sequence; ie, first call these setup functions, then you can use the rest of the functions. 
-        \item Separate setup/construction functions from the runtime functions. 
-        \item More flexible than a factory.
-    \end{itemize}
-\end{center}
 
 
 \subsection{Dependency Injections}
@@ -1009,15 +940,312 @@ This is important for fast and scalable on our wishlist.
 
 CMake does this for you!
 
+\subsubsection{Scalable}
 
+Want to support:
+\begin{itemize}
+    \item large codebases
+    \item many users  
+\end{itemize}
 
 \pagebreak
 
 \section{Deployment}
 
+Deployment is the process that takes you from development to production. 
+
+\vspace*{1em}
+
+\textbf{Development: } Works on my machine!
+
+\vspace*{1em}
+
+\textbf{Production: }
+\begin{itemize}
+    \item Server: Running "in the cloud"
+    \item Application: Running on users' phones, computers, etc.
+\end{itemize}
+
+\textbf{Observations: }
+\begin{itemize}
+    \item Deployment requires packaging
+    \item Deployment requires isolation and resource management 
+\end{itemize}
+
+Virtual machines provides both, but at high overhead... is there a better way?
+
+\subsection{Aside on virtualization}
+
+Virtualization is a widely-used term in CS, but hard to define.
+
+Easiest to define as the antonym of "actual":
+\begin{itemize}
+    \item Virtual memory vs. actual memory
+    \item Virtual machine vs. actual machine
+\end{itemize}
+
+Virtualization predates even computers. Turing machines are a virtual computer. 
+
+Universal turing machine $\Rightarrow$ a way to run virtual turing machines 
+
+\vspace*{1em}
+
+\textbf{Examples of virtualization}
+\begin{itemize}
+    \item Virtual functions: specify an interface without an implementation
+    \item Memory virtualization: Present a large address space independent of RAM 
+    \item Storage virtualization: Make many disks on may computers appear as one 
+    \item JVM: Consistent data, memory, computation model on different architectures
+    \item Machine virtualization
+\end{itemize}
+
+\includegraphics*[width=\linewidth]{virtualizationOverhead.png}
+
+\subsection{Containerization}
+
+\begin{multicols}{2}
+    \subsubsection*{Containerization is a restricted view of the underlying OS }
+        \begin{itemize}
+            \item See group of related processes $\rightarrow$
+            \item Manage and limit resource usage $\rightarrow$
+            \item Separate or restricted filesystem $\rightarrow$
+            \item Restrict system calls $\rightarrow$
+        \end{itemize}
+    \subsubsection*{Linux Kernel magic}
+        \begin{itemize}
+            \item Namespaces
+            \item cgroups
+            \item OverlayFS
+            \item seccomp
+        \end{itemize}
+\end{multicols}
+
+\subsection{Docker}
+
+Docker provides utilities and glue for Linux containerization:
+\begin{itemize}
+    \item A way to build filesystems in layers
+    \item A package format (Basically, a filesystem and config)
+    \item A package repository
+\end{itemize}
+
+If running Docker on Mac/Windows: Moby Linux VM
+
+\subsubsection{Docker Image}
+\begin{itemize}
+    \item Snapshot of OS which is defined by commands and stacked in layers 
+    \item Created by 'docker build' 
+    \item Defined by Dockerfile 
+    \item Base is another image, e.g. ubuntu:latest 
+    \item Can be tagged with versions, e.g. :latest 
+\end{itemize}
+
+\subsubsection{Docker Container}
+\begin{itemize}
+    \item Running instance of an image 
+    \item Created by 'docker run'
+\end{itemize}
+
+\subsubsection{Docker Volume}
+\begin{itemize}
+    \item Virtual disk image
+    \item Created by:
+    \begin{itemize}
+        \item docker run -v/--mount
+        \item docker volume
+    \end{itemize}
+    \item Persists across restarts 
+    \item Shareable between containers
+\end{itemize}
+
+\subsubsection{Docker Bind mount}
+\begin{itemize}
+    \item Mount host FS in container
+    \item Created by:
+    \begin{itemize}
+        \item docker run -v/--mount 
+    \end{itemize}
+    \item Share data between host and container 
+    \item Volume that lives in host FS 
+\end{itemize}
+
+\subsubsection{Docker Port}
+\begin{itemize}
+    \item Expose ports inside container to:
+    \begin{itemize}
+        \item Host: use 127.0.01
+        \item Internet: use 0.0.0.0
+    \end{itemize}
+    \item Defined in:
+    \begin{itemize}
+        \item Image(Docker file) For documentation
+        \item Container(docker run) For implementation
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Docker Examples}
+
+\subsubsection*{base.Dockerfile}
+
+\begin{verbatim}
+    # Get the base Ubuntu image from Docker Hub
+    FROM ubuntu:latest as base
+
+    # Update the base image and install build environment
+    RUN apt-get update && apt-get install -y \
+        build-essential \
+        cmake \
+        ...
+\end{verbatim}
+
+\subsubsection*{Dockerfile}
+\begin{verbatim}
+    # Define builder stage
+    FROM my-proj:base as builder
+
+    # Share work directory
+    COPY . /usr/src/project
+    WORKDIR /usr/src/project/build
+
+    # Build and test
+    RUN cmake ..
+    RUN make
+    RUN ctest --output-on_failure  
+
+    # Define deploy stage
+    FROM ubuntu:latest as deploy
+
+    # Copy server output binary to "."
+    COPY --from=builder /usr/src/project/build/bin/webserver .
+
+    # Copy config files
+    COPY conf/* conf/
+
+    # Expose port 80
+    EXPOSE 80
+
+    # Use ENTRYPOINT to specify the binary name
+    ENTRYPOINT ["./webserver"]
+
+    # Use CMD to specify arguments to ENTRYPOINT
+    CMD ["conf/deploy.conf"]
+  
+\end{verbatim}
+
+\subsubsection{Container registries}
+
+\includegraphics*[width=\linewidth]{containerRegistries.png}
+
+\subsubsection{Google Cloud Build}
+
+Define a series of build steps in cloudbuild.yaml.
+
+To start a build:
+\begin{verbatim}
+    gclouds builds submit
+\end{verbatim}
+
+The build will be performed in the cloud, hermetically with no context from previous builds.
+
+\vspace*{1em}
+
+Output:
+\begin{itemize}
+    \item Build logs 
+    \begin{itemize}
+        \item Console
+        \item Web UI 
+    \end{itemize}
+    \item Build artifacts 
+    \begin{itemize}
+        \item container images 
+        \item compiled outputs
+    \end{itemize}
+\end{itemize}
+
+\vspace*{1em}
+
+\textbf{Build steps: }
+
+\includegraphics*[width=\linewidth]{buildsteps.png}
+
+\textbf{Whole config: }
+
+\includegraphics*[width=\linewidth]{wholeConfig.png}
+
 \pagebreak
 
-\section{Refactoring and debugging the web server}
+\section{Refactoring}
+
+Refactoring is rewriting code to improve some property, without changing the functionality.
+
+\vspace*{1em}
+
+In this case, we are restructuring the code to be more testable. But could also be refactored to be more maintainable: divide up long functions, make class do fewer things.
+
+\vspace*{1em}
+
+Each change is small and incremental, so the changes are more likely to be safe. Best practice is to create tests ahead of time so the test can verify correct behavior after the changes.
+\begin{itemize}
+    \item Mocks can be valuable when you are the client of large classes you don't want to test.
+    \item Costly because you have to change the code's structure materially, usually by adding interfaces.
+    \item Code often ends up a bit cleaner, sometimes you need to poke ugly holes for testing.
+\end{itemize}
+
+\subsubsection*{Refactor Ex 1}
+
+\includegraphics*[width=0.6\linewidth]{refactorEx1.png}
+
+\begin{center}
+    \begin{itemize}
+        \item Extract method when a fucntion gets too long or has a useful internal Boundary
+        \item We used this to extract ProcessRequest() and later HandleRequest()
+    \end{itemize}
+\end{center}
+
+\includegraphics*[width=0.6\linewidth]{refactorEx2.png}
+
+\begin{center}
+    \begin{itemize}
+        \item Introduce param object when a method's param list gets too long.
+        \item Certain functions have many params\par
+        Often triggered by dependency injection or tunability
+        \item Can create a param object (also known as an options struct) to encapsulate these params
+        \item Nice side effect: you can define defaults and have a bit more control over values before the function executes
+    \end{itemize}
+\end{center}
+
+\includegraphics*[width=0.6\linewidth]{refactorEx3.png}
+
+\begin{center}
+    \begin{itemize}
+        \item Replace magic number with symbolic constant.
+        \item There is nothing worse than random numbers strewn around code that have no clear documentation. (WHY DID YOU PICK THAT NUMBER???)
+        \item Instead, symbolic constants make code self-documenting
+        \item Done for the buffer length.
+    \end{itemize}
+\end{center}
+
+\includegraphics*[width=0.6\linewidth]{refactorEx4.png}
+
+\begin{center}
+    \begin{itemize}
+        \item Replace Constructor with Factory Method when you want your constructor to be able to fail without using exceptions. (Exceptions in C++ are difficult to use correctly and often best avoided)
+        \item Can also help if you want to hide which derived type is being returned based on the input values.
+        \item Potential downside: forces you to allocate this object on the heap. Not usually a huge issue.
+    \end{itemize}
+\end{center}
+
+\includegraphics*[width=0.6\linewidth]{refactorEx5.png}
+
+\begin{center}
+    \begin{itemize}
+        \item Introduce expression builder when your object has a required call sequence; ie, first call these setup functions, then you can use the rest of the functions. 
+        \item Separate setup/construction functions from the runtime functions. 
+        \item More flexible than a factory.
+    \end{itemize}
+\end{center}
+
 
 \pagebreak
 
@@ -1026,6 +1254,312 @@ CMake does this for you!
 \pagebreak
 
 \section{Static Analysis}
+
+Static analysis is a process that inspects the code of your program without executing it directly. Often a control flow graph is built, although not required. Static analysis looks for patterns in that graph that represent likely problems.
+
+\vspace*{1em}
+
+The most commonly used ones are compiler warnings, type checking, and linters.
+
+However, most people associate static analysis with a program (other than compiler) that inspects your code for classes of bugs. This checker is often trying to disprove the existence of certain classes bugs in your code. 
+
+\vspace*{1em}
+
+\subsection{Compiler warnings}
+
+\includegraphics*[width=\linewidth]{staticAnalysis.png}
+\includegraphics*[width=\linewidth]{staticAnalysis2.png}
+
+\subsection{Static type checking}
+
+Static type checking gives you compile time errors about illegal operations. This is opposed to runtime typed languages that only give you errors at runtime.
+
+You can even do fancy things like type inference (auto in C++x11) at compile time.
+
+\subsection{Linters}
+
+Lint was a tool originally developed alongside the C programming language,  intended to help catch non-portable constructs.
+
+You'll often find a less pedantic linter built into compiler frontends.
+
+\begin{verbatim}
+    $ clang-tidy test.cc
+\end{verbatim}
+
+Linters may not seem like static analysis, but they correct more than just style.
+
+Here are some examples:
+\begin{itemize}
+    \item Inaccurate erase/remove 
+    \item Suspicious semicolon 
+    \item Unused RAII 
+    \item Use after move 
+\end{itemize}
+
+\begin{center}
+    \includegraphics*[width=0.7\linewidth]{linter.png}
+\end{center}
+
+\subsection{Examples}
+
+\subsubsection{Use after free}
+
+\begin{verbatim}
+    // Allocate 'a' on the heap
+    int* a = new int;
+    
+    // 'a' is still live, so this is OK
+    *a = 7;
+    
+    // Free memory associated with 'a'
+    delete a;
+    
+    // Best case, this will trigger a SIGSEGV.
+    // Worst case, this will not trigger a SIGSEGV and silently
+    // do the wrong thing.
+    *a = 8;
+    
+\end{verbatim}
+
+We can statically determine that 'a' isn't live on the last line
+
+Value:
+\begin{itemize}
+    \item Helps us avoid SIGSEGVs
+    \item Helps avoid attacks that may be able to run malicious code by taking advantage of a use-after free 
+\end{itemize}
+
+(trivial example)
+
+\hrulefill
+
+\begin{verbatim}
+    class Foo {
+        public:
+         Foo(int* a) a_(a) { … }
+         set(int a) { *a_ = a; }
+        private:
+         int* a_;
+       };
+       
+       Foo build() {
+         int a;
+         return Foo(&a);
+       }
+       
+       void run() {
+         // Best case, this will trigger a SIGSEGV.
+         // Worst case, this silently do the wrong thing.
+         build().set(7);
+       }
+       
+\end{verbatim}
+
+In this case, \textit{int a} isn't live at the point where it will be used in \textit{run()}
+
+\vspace*{1em}
+
+This is because \textit{Foo} stored a pointer to \textit{int a} as a member,
+
+and then \textit{int a} was freed when it went out of scope at the end of \textit{build()}.
+
+\subsubsection{Buffer overrun}
+
+\begin{verbatim}
+    // Wrong:
+    int a[10];
+    memset(a, 0, 100);
+    // This just stomped on 90*4 bytes past the end of 'a'.
+    
+    // Right:
+    int a[10];
+    memset(a, 0, sizeof(a));
+
+    // Better:
+    int a[10] = {};
+
+\end{verbatim}
+
+Reading or writing past the end of a buffer will produce undefined results.
+
+\vspace*{1em}
+
+Hopefully you run into a guard page and it causes a SIGSEGV, otherwise it will just silently stomp on memory. 
+
+\vspace*{0.5em}
+
+The compiler can often catch this when the size is known at compile time, but it is much harder if it is dynamically sized.
+
+\subsubsection{Deadlock Detection}
+
+\begin{verbatim}
+    Mutex mu1, mu2;
+
+    void foo() {
+      mu1.Lock();
+      mu2.Lock();
+      mu2.Unlock();
+      mu1.Unlock();
+    }
+    
+    void bar() {
+      mu2.Lock();
+      mu1.Lock();
+      mu1.Unlock();
+      mu2.Unlock();
+    }
+    
+    // It is not safe to run foo() and bar() concurrently    
+\end{verbatim}
+
+Deadlock is when you have 2+ routines waiting on each other in a cycle. Order resource acquisition is one of a few ways to avoid deadlock. 
+
+\vspace*{1em}
+
+Static analyzers can detect if there is a reachable state where both \textit{foo()} and \textit{bar} are both concurrently executing and waiting on each other.
+
+\hrulefill
+
+\begin{verbatim}
+    Mutex mu1, mu2;
+    int a GUARDED_BY(mu1);
+    int b GUARDED_BY(mu2);
+    
+    void foo() REQUIRES(mu1, mu2) {
+      a = 0;
+      b = 0;
+    }
+    
+    void test() {
+      mu1.Lock();
+      foo();         // Warning!  Requires mu2.
+      mu1.Unlock();
+    }    
+\end{verbatim}
+
+\textbf{Lock annotation:} You can sometimes annotate your code to help the static analyzer better understand the intended behavior. In the case of locks, you can explain what mutex guard which vars and then the static analyzer can check that invariant.
+
+\subsubsection{Uninitialized variable}
+
+\begin{verbatim}
+    // Wrong:
+    int a;
+    printf(“%d\n”, a);
+    // This printed random garbage from the stack.
+
+    // Right:
+    int a = 0;
+    printf(“%d\n”, a);
+\end{verbatim}
+
+Uninitialized vars can result in undefined behavior. Assign-before-use is often easily identified by compilers or other static checks.
+
+\subsubsection{Dead code}
+
+\begin{verbatim}
+    const int kConstant = 7;
+
+    int foo = 5;
+    if (foo > kConstant) {
+      // All this code is dead...
+      [...]
+    }
+    
+\end{verbatim}
+
+It is possible to prove that certain blocks are never reachable. This is a contrived example, but can be arbitrarily complex. In general, you can attempt to determine if a guard will always be false. 
+
+\subsection{How static analysis works}
+
+In general, static analysis can be reduced to the halting problem, so is undecidable in general. 
+
+\vspace*{1em}
+
+But we can produce approximates, and require assumptions/annotation to assist.
+
+\vspace*{1em}
+
+There are two typical approaches:
+\begin{enumerate}
+    \item Abstract interpretation
+    \item Data flow analysis
+\end{enumerate}
+
+\subsubsection{Abstract implementation}
+Abstract implementation: model effect of statements on an abstract machine to identify mistakes
+
+\begin{enumerate}
+    \item Walk the control flow graph 
+    \item Keep track of things that are true when a given unit of code executes 
+    \item Determine if invariants are broken 
+    \item Example bugs you catch:
+    \begin{itemize}
+        \item Use after free 
+        \item Uninitialized vars 
+        \item Deadlock (if include concurrent execution)
+    \end{itemize}
+\end{enumerate}
+
+\includegraphics*[width=0.8\linewidth]{abstractInterpretation.png}
+
+\subsubsection{Data Flow Analysis}
+Data flow analysis: attempt to determine possible input values based on the control flow graph (similar to general type inference in languages like ocaml)
+
+\begin{enumerate}
+    \item Keep track of the set of possible values a variable can take at a given point in the program. 
+    \item Identify statements that break invariants for a possible value a variable could take on that point.
+    \item Example bugs:
+    \begin{itemize}
+        \item buffer overrun 
+        \item dead/unreachable code 
+    \end{itemize}
+\end{enumerate}
+
+\includegraphics*[width=0.7\linewidth]{dataFlowAnalysis.png}
+
+\subsection{Limitation of Static Analysis}
+
+There are an exponential number of paths through a program, so keeping track of each requires an exponential amount of memory.
+
+\vspace*{1em}
+
+The range of possible inputs isn't limited much throughout the program, which results in false positives.
+
+\vspace*{1em}
+
+To overcome these limitations, we often have to pick between low recall (too few bugs get caught) and low precision (correct code gets erroneously flagged).
+
+\vspace*{1em}
+
+\hrulefill
+
+One solution is extend the language. One example is Java's \textit{@VisibleForTesting} annotation. 
+
+\vspace*{0.5em}
+
+In Java, best practices dictate class methods should be private unless they need to be used outside of that class. Static analysis can flag when methods are non-private but also unused outside of class context. 
+
+\vspace*{0.5em}
+
+So if you want to access methods for unit testing purposes, make the method public for use by the unit test. Maintain Java best practices and act like the method is private by ensuring it is not used anywhere else in the program.
+
+\hrulefill
+
+Another solution: Introduce new syntax 
+
+\vspace*{.5em}
+
+Define "Typescript", which is a superset of Javascript that can provide detailed typing information.
+
+\vspace*{.5em}
+
+Then provide tools:
+\begin{itemize}
+    \item Tool to perform static analysis 
+    \item Tool to automatically generate Javascript from Typescript 
+\end{itemize}
+
+In reality, this is the same tool: \textbf{The Typescript Compiler}
 
 \pagebreak
 
