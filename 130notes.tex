@@ -423,7 +423,7 @@ Research on code review shows:
 
 Before sending out code for review make sure you have done these things:
 \begin{enumerate}
-    \item Write coe that is easy to review!
+    \item Write code that is easy to review!
     \item Keep changes small and focused
     \item Send a work in progress review out early
     \item Review your own work!
@@ -463,7 +463,7 @@ Code review also develops a shared understanding about the purpose of the code.
     \item How will this code be used next year?
 \end{itemize}
 
-It also establishes N+1 availability ion understanding of the code, which is important because teams are dynamic.
+It also establishes N+1 availability in understanding of the code, which is important because teams are dynamic.
 
 \subsection{Methods of code review}
 \begin{itemize}
@@ -532,7 +532,7 @@ First view your changes and get a change ID:
 Things you will see:
 \begin{itemize}
     \item MIME Types
-    \item Header liens
+    \item Header lines
     \item \textbackslash r\textbackslash n\textbackslash r\textbackslash n or (\textbackslash n\textbackslash n)
     \item Connection management
     \item Error codes 
@@ -1249,10 +1249,6 @@ Each change is small and incremental, so the changes are more likely to be safe.
 
 \pagebreak
 
-\section{Testability}
-
-\pagebreak
-
 \section{Static Analysis}
 
 Static analysis is a process that inspects the code of your program without executing it directly. Often a control flow graph is built, although not required. Static analysis looks for patterns in that graph that represent likely problems.
@@ -1564,6 +1560,108 @@ In reality, this is the same tool: \textbf{The Typescript Compiler}
 \pagebreak
 
 \section{Logging and exception handling}
+
+\textbf{Why log? }
+\begin{itemize}
+    \item Development
+    \item Debugging
+    \item Security
+    \item Monitoring 
+    \item Usage Insights
+\end{itemize}
+
+\vspace*{2em}
+
+\textbf{How to log?}
+\begin{verbatim}
+    #include <boost/log/trivial.hpp>
+    #include <iostream>
+    
+    int main(int, char *[]) {
+      BOOST_LOG_TRIVIAL(info) << "This is some info";
+    
+      BOOST_LOG_TRIVIAL(warning) << "Not great...";
+    
+      BOOST_LOG_TRIVIAL(error) << "OH NOOOO";
+    
+      BOOST_LOG_TRIVIAL(fatal) << "eff this I'm out";
+    
+      return 0;
+    }    
+\end{verbatim}
+
+\textbf{When to log?}
+
+\textit{Whenever something interesting things happen!} E.g. Ready to serve, serving a request, errors, shutting down
+
+\vspace*{1em}
+
+\textbf{What to log?}
+
+Verify correct usage, and detect abuse.
+
+For example this might be logged for each request:
+\begin{itemize}
+    \item Timestamp 
+    \item Thread ID 
+    \item IP of request 
+    \item Severity
+    \item .... etc.
+\end{itemize}
+
+\vspace*{1em} 
+
+\textbf{Where to log?}
+
+The goals for statement logs are:
+\begin{itemize}
+    \item Inspect manually 
+    \item Parse with tools 
+    \item Do not fill disk 
+    \item Persist after restart/crash 
+    \item Resilient to hardware failures 
+\end{itemize}
+
+We can keep them in log sinks such as:
+\begin{itemize}
+    \item Console stdout/stderr 
+    \item File(s) on disk 
+    \item Remote servers 
+\end{itemize}
+
+To avoid filling up the disk, rotate log files. 
+
+E.g. to cap usage at 100MB:
+\begin{itemize}
+    \item When log file > 10MB: 
+    \begin{itemize}
+        \item move logname.log to logname\_YYYYMMDDhhmm.log 
+        \item Delete oldest log if 10 or more exist 
+    \end{itemize}
+\end{itemize}
+
+\includegraphics*[width=\linewidth]{logsDockerCloud.png}
+
+\subsection{Notes on Severity}
+\textbf{Severity usually multi-level:}
+\begin{itemize}
+    \item trace/verbose/debug 
+    \item info 
+    
+    just some info 
+    \item warning 
+
+    Not great.... 
+    \item error 
+
+    OH NOOOO 
+    \item fatal 
+
+    eff this im out
+\end{itemize}
+Specify minimum severity level for log destinations: logLevel=info includes info, warning, and error 
+
+
 
 \pagebreak
 

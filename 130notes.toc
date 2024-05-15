@@ -1,0 +1,73 @@
+\contentsline {section}{\numberline {1}Source Control}{3}{}%
+\contentsline {subsection}{\numberline {1.1}Source Control Tools}{3}{}%
+\contentsline {subsection}{\numberline {1.2}Changelists and filesets}{3}{}%
+\contentsline {subsection}{\numberline {1.3}Git source control}{4}{}%
+\contentsline {subsubsection}{\numberline {1.3.1}Diffs}{4}{}%
+\contentsline {subsubsection}{\numberline {1.3.2}Making new commits}{4}{}%
+\contentsline {subsubsection}{\numberline {1.3.3}Making a new branch}{5}{}%
+\contentsline {subsubsection}{\numberline {1.3.4}Tree turns into graph}{5}{}%
+\contentsline {subsubsection}{\numberline {1.3.5}Pruning the tree}{6}{}%
+\contentsline {section}{\numberline {2}Testing}{7}{}%
+\contentsline {subsection}{\numberline {2.1}Test Driven Development}{7}{}%
+\contentsline {subsection}{\numberline {2.2}Signs you need MORE tests}{7}{}%
+\contentsline {subsection}{\numberline {2.3}What to test?}{8}{}%
+\contentsline {subsection}{\numberline {2.4}Dependency Injections}{9}{}%
+\contentsline {subsection}{\numberline {2.5}Mocks vs Fakes}{10}{}%
+\contentsline {subsection}{\numberline {2.6}Testing State vs Testing Interaction}{11}{}%
+\contentsline {subsection}{\numberline {2.7}Testing Readability}{11}{}%
+\contentsline {subsection}{\numberline {2.8}Integration Tests}{11}{}%
+\contentsline {section}{\numberline {3}Code Reviews}{13}{}%
+\contentsline {subsection}{\numberline {3.1}Change Descriptions}{13}{}%
+\contentsline {subsection}{\numberline {3.2}During code review}{13}{}%
+\contentsline {subsection}{\numberline {3.3}Methods of code review}{14}{}%
+\contentsline {subsection}{\numberline {3.4}Git with Gerrit}{14}{}%
+\contentsline {section}{\numberline {4}Tools for web server development}{16}{}%
+\contentsline {subsection}{\numberline {4.1}Command-line HTTP tools}{16}{}%
+\contentsline {subsubsection}{\numberline {4.1.1}Netcat (NC)}{16}{}%
+\contentsline {subsubsection}{\numberline {4.1.2}Curl (curl)}{17}{}%
+\contentsline {subsubsection}{\numberline {4.1.3}HTTPie (HTTP)}{18}{}%
+\contentsline {subsection}{\numberline {4.2}Using real Browsers}{18}{}%
+\contentsline {section}{\numberline {5}Build Systems}{20}{}%
+\contentsline {subsection}{\numberline {5.1}Make}{20}{}%
+\contentsline {subsubsection}{\numberline {5.1.1}Who makes the Makefiles?}{22}{}%
+\contentsline {subsection}{\numberline {5.2}GNU Build System}{23}{}%
+\contentsline {subsection}{\numberline {5.3}CMake}{23}{}%
+\contentsline {subsubsection}{\numberline {5.3.1}CMake Examples}{23}{}%
+\contentsline {subsection}{\numberline {5.4}Build Systems Wishlist}{24}{}%
+\contentsline {subsubsection}{\numberline {5.4.1}Correct}{24}{}%
+\contentsline {subsubsection}{\numberline {5.4.2}Hermetic}{24}{}%
+\contentsline {subsubsection}{\numberline {5.4.3}Flexible}{24}{}%
+\contentsline {subsubsection}{\numberline {5.4.4}Easy to use}{24}{}%
+\contentsline {subsubsection}{\numberline {5.4.5}Automatable}{25}{}%
+\contentsline {subsubsection}{\numberline {5.4.6}Fast}{25}{}%
+\contentsline {subsubsection}{\numberline {5.4.7}Manage dependencies automatically}{25}{}%
+\contentsline {subsubsection}{\numberline {5.4.8}Scalable}{25}{}%
+\contentsline {section}{\numberline {6}Deployment}{26}{}%
+\contentsline {subsection}{\numberline {6.1}Aside on virtualization}{26}{}%
+\contentsline {subsection}{\numberline {6.2}Containerization}{26}{}%
+\contentsline {subsection}{\numberline {6.3}Docker}{27}{}%
+\contentsline {subsubsection}{\numberline {6.3.1}Docker Image}{27}{}%
+\contentsline {subsubsection}{\numberline {6.3.2}Docker Container}{27}{}%
+\contentsline {subsubsection}{\numberline {6.3.3}Docker Volume}{27}{}%
+\contentsline {subsubsection}{\numberline {6.3.4}Docker Bind mount}{27}{}%
+\contentsline {subsubsection}{\numberline {6.3.5}Docker Port}{28}{}%
+\contentsline {subsubsection}{\numberline {6.3.6}Docker Examples}{28}{}%
+\contentsline {subsubsection}{\numberline {6.3.7}Container registries}{29}{}%
+\contentsline {subsubsection}{\numberline {6.3.8}Google Cloud Build}{29}{}%
+\contentsline {section}{\numberline {7}Refactoring}{31}{}%
+\contentsline {section}{\numberline {8}Static Analysis}{35}{}%
+\contentsline {subsection}{\numberline {8.1}Compiler warnings}{35}{}%
+\contentsline {subsection}{\numberline {8.2}Static type checking}{35}{}%
+\contentsline {subsection}{\numberline {8.3}Linters}{35}{}%
+\contentsline {subsection}{\numberline {8.4}Examples}{36}{}%
+\contentsline {subsubsection}{\numberline {8.4.1}Use after free}{36}{}%
+\contentsline {subsubsection}{\numberline {8.4.2}Buffer overrun}{37}{}%
+\contentsline {subsubsection}{\numberline {8.4.3}Deadlock Detection}{37}{}%
+\contentsline {subsubsection}{\numberline {8.4.4}Uninitialized variable}{38}{}%
+\contentsline {subsubsection}{\numberline {8.4.5}Dead code}{38}{}%
+\contentsline {subsection}{\numberline {8.5}How static analysis works}{39}{}%
+\contentsline {subsubsection}{\numberline {8.5.1}Abstract implementation}{39}{}%
+\contentsline {subsubsection}{\numberline {8.5.2}Data Flow Analysis}{40}{}%
+\contentsline {subsection}{\numberline {8.6}Limitation of Static Analysis}{41}{}%
+\contentsline {section}{\numberline {9}Logging and exception handling}{42}{}%
+\contentsline {subsection}{\numberline {9.1}Notes on Severity}{43}{}%
